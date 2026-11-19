@@ -1,22 +1,37 @@
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>PS Fantasy Nepal</title>
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#101827;color:white;font-family:Arial}
-header{background:#087b45;padding:24px 16px}
-h1{margin:0;font-size:26px}
+header{background:#087b45;padding:20px 15px}
+header h1{margin:0;font-size:25px}
 header p{margin-bottom:0}
-main{padding:16px}
-.card{background:#202d40;padding:18px;border-radius:14px;margin:15px 0}
-button{background:#00c875;color:#071b12;border:0;padding:13px 18px;border-radius:9px;font-weight:bold}
-nav{display:flex;justify-content:space-around;background:#202d40;padding:16px;position:sticky;bottom:0}
-nav span{font-size:13px}
-.green{color:#00df87}
+main{padding:14px;max-width:700px;margin:auto}
+.card{background:#202d40;padding:16px;border-radius:14px;margin:13px 0}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.stat{background:#293c52;padding:12px;border-radius:10px;text-align:center}
+.stat strong{display:block;font-size:22px;color:#00df87}
+.tabs{display:flex;gap:7px;flex-wrap:wrap;margin:15px 0}
+button{border:0;border-radius:8px;padding:11px 13px;font-weight:bold;cursor:pointer}
+.tab{background:#29394e;color:white}
+.tab.active{background:#00c875;color:#062318}
+.add{background:#00c875;color:#071b12}
+.remove{background:#b83e4b;color:white}
+.player{display:flex;align-items:center;justify-content:space-between;gap:8px;background:#29394e;padding:12px;border-radius:10px;margin:9px 0}
+.player small{color:#b8c5d5}
+.player button{min-width:65px}
+.tag{color:#00df87;font-size:12px;font-weight:bold}
+input{padding:12px;width:100%;border-radius:8px;border:1px solid #53657b;background:#182538;color:white}
+select{padding:10px;background:#29394e;color:white;border:0;border-radius:8px}
+.full{width:100%;margin-top:10px}
+.notice{color:#ffd166;font-size:13px;line-height:1.5}
+footer{text-align:center;padding:20px;color:#9caec2}
 </style>
 </head>
 <body>
@@ -24,30 +39,171 @@ nav span{font-size:13px}
 <h1>🏏 PS Fantasy Nepal 🇳🇵</h1>
 <p>Play Cricket. Build Your Team. Rule the Game.</p>
 </header>
+
 <main>
 <div class="card">
-<h2>Welcome to PS Fantasy Nepal!</h2>
-<p>Build your dream cricket team and enjoy fantasy cricket.</p>
+<h2>👥 Create Your Fantasy Team</h2>
+<p>Select 11 players within 100 credits.</p>
+<div class="stats">
+<div class="stat"><strong id="count">0/11</strong>Players</div>
+<div class="stat"><strong id="credits">100</strong>Credits left</div>
+<div class="stat"><strong id="teams">0/7</strong>Team A</div>
 </div>
-<div class="card">
-<h3>🏆 Upcoming Matches</h3>
-<p>No matches available yet.</p>
 </div>
+
 <div class="card">
-<h3>👥 My Fantasy Team</h3>
-<p>Create your winning team.</p>
-<button onclick="alert('Team builder coming soon!')">Create Team</button>
+<h3>📋 Player Categories</h3>
+<div class="tabs" id="tabs">
+<button class="tab active" data-role="ALL">All</button>
+<button class="tab" data-role="WK">WK</button>
+<button class="tab" data-role="BAT">BAT</button>
+<button class="tab" data-role="AR">AR</button>
+<button class="tab" data-role="BOWL">BOWL</button>
 </div>
+<div id="players"></div>
+<p class="notice">Demo players only. Actual match squads must be added before playing real contests.</p>
+</div>
+
 <div class="card">
-<h3>⭐ Leaderboard</h3>
-<p>Rankings will appear here.</p>
+<h3>⭐ Selected Players</h3>
+<div id="selected">No players selected yet.</div>
+<p id="roleCounts">WK 0 | BAT 0 | AR 0 | BOWL 0</p>
+</div>
+
+<div class="card">
+<h3>👑 Captain & Vice Captain</h3>
+<label>Captain (2x points)</label>
+<select id="captain"><option value="">Select Captain</option></select>
+<br><br>
+<label>Vice Captain (1.5x points)</label>
+<select id="vice"><option value="">Select Vice Captain</option></select>
+<button class="add full" onclick="saveTeam()">✅ Save My Team</button>
+<p id="message" class="notice"></p>
 </div>
 </main>
-<nav>
-<span>🏠 Home</span>
-<span>🏏 Matches</span>
-<span>👥 My Team</span>
-<span>🏆 Rank</span>
-</nav>
+
+<footer>PS Fantasy Nepal 🇳🇵 | Demo Version</footer>
+
+<script>
+const players=[
+{id:1,n:"Nepal Player 1",t:"Nepal",r:"WK",c:9},
+{id:2,n:"Nepal Player 2",t:"Nepal",r:"WK",c:8},
+{id:3,n:"Nepal Player 3",t:"Nepal",r:"BAT",c:10},
+{id:4,n:"Nepal Player 4",t:"Nepal",r:"BAT",c:9},
+{id:5,n:"Nepal Player 5",t:"Nepal",r:"BAT",c:8},
+{id:6,n:"Nepal Player 6",t:"Nepal",r:"AR",c:10},
+{id:7,n:"Nepal Player 7",t:"Nepal",r:"AR",c:9},
+{id:8,n:"Nepal Player 8",t:"Nepal",r:"AR",c:8},
+{id:9,n:"Nepal Player 9",t:"Nepal",r:"BOWL",c:9},
+{id:10,n:"Nepal Player 10",t:"Nepal",r:"BOWL",c:8},
+{id:11,n:"Nepal Player 11",t:"Nepal",r:"BOWL",c:7},
+{id:12,n:"Nepal Player 12",t:"Nepal",r:"BOWL",c:8},
+{id:13,n:"Opponent Player 1",t:"Opponent",r:"WK",c:9},
+{id:14,n:"Opponent Player 2",t:"Opponent",r:"BAT",c:10},
+{id:15,n:"Opponent Player 3",t:"Opponent",r:"BAT",c:9},
+{id:16,n:"Opponent Player 4",t:"Opponent",r:"BAT",c:8},
+{id:17,n:"Opponent Player 5",t:"Opponent",r:"BAT",c:7},
+{id:18,n:"Opponent Player 6",t:"Opponent",r:"AR",c:10},
+{id:19,n:"Opponent Player 7",t:"Opponent",r:"AR",c:9},
+{id:20,n:"Opponent Player 8",t:"Opponent",r:"AR",c:8},
+{id:21,n:"Opponent Player 9",t:"Opponent",r:"BOWL",c:9},
+{id:22,n:"Opponent Player 10",t:"Opponent",r:"BOWL",c:8},
+{id:23,n:"Opponent Player 11",t:"Opponent",r:"BOWL",c:7},
+{id:24,n:"Opponent Player 12",t:"Opponent",r:"BOWL",c:8}
+];
+
+let selected=[];
+let currentRole="ALL";
+const $=id=>document.getElementById(id);
+
+function render(){
+ const total=selected.reduce((s,p)=>s+p.c,0);
+ $("count").textContent=selected.length+"/11";
+ $("credits").textContent=100-total;
+ $("teams").textContent=selected.filter(p=>p.t==="Nepal").length+"/7";
+
+ $("players").innerHTML=players.filter(p=>
+ currentRole==="ALL"||p.r===currentRole
+ ).map(p=>{
+ const chosen=selected.some(x=>x.id===p.id);
+ return `<div class="player">
+ <div><b>${p.n}</b><br><small>${p.t} • ${p.r} • ${p.c} credits</small></div>
+ <button class="${chosen?'remove':'add'}" onclick="toggle(${p.id})">${chosen?'Remove':'+ Add'}</button>
+ </div>`;
+ }).join("");
+
+ $("selected").innerHTML=selected.length?selected.map(p=>
+ `<div class="player"><div>${p.n}<br><small>${p.r} • ${p.c} credits</small></div><button class="remove" onclick="toggle(${p.id})">Remove</button></div>`
+ ).join(""):"No players selected yet.";
+
+ $("roleCounts").textContent=["WK","BAT","AR","BOWL"].map(r=>
+ r+" "+selected.filter(p=>p.r===r).length
+ ).join(" | ");
+
+ ["captain","vice"].forEach(id=>{
+ const old=$(id).value;
+ $(id).innerHTML='<option value="">Select '+(id==="captain"?"Captain":"Vice Captain")+'</option>'+
+ selected.map(p=>`<option value="${p.id}">${p.n}</option>`).join("");
+ if(selected.some(p=>String(p.id)===old))$(id).value=old;
+ });
+}
+
+function toggle(id){
+ const p=players.find(x=>x.id===id);
+ const index=selected.findIndex(x=>x.id===id);
+ if(index>=0){
+ selected.splice(index,1);
+ }else{
+ if(selected.length>=11)return alert("Maximum 11 players allowed.");
+ if(selected.reduce((s,x)=>s+x.c,0)+p.c>100)return alert("Not enough credits!");
+ if(p.t==="Nepal"&&selected.filter(x=>x.t==="Nepal").length>=7)
+ return alert("Maximum 7 players allowed from Nepal.");
+ if(p.t==="Opponent"&&selected.filter(x=>x.t==="Opponent").length>=7)
+ return alert("Maximum 7 players allowed from Opponent.");
+ if(selected.filter(x=>x.r===p.r).length>=({WK:4,BAT:6,AR:4,BOWL:6})[p.r])
+ return alert("Maximum limit reached for this category.");
+ selected.push(p);
+ }
+ $("message").textContent="";
+ render();
+}
+
+$("tabs").addEventListener("click",e=>{
+ if(!e.target.dataset.role)return;
+ currentRole=e.target.dataset.role;
+ document.querySelectorAll(".tab").forEach(b=>
+ b.classList.toggle("active",b.dataset.role===currentRole));
+ render();
+});
+
+function saveTeam(){
+ const roles=["WK","BAT","AR","BOWL"];
+ if(selected.length!==11)return alert("Please select exactly 11 players.");
+ const limits={WK:[1,4],BAT:[3,6],AR:[1,4],BOWL:[3,6]};
+ for(const r of roles){
+ const n=selected.filter(p=>p.r===r).length;
+ if(n<limits[r][0]||n>limits[r][1])
+ return alert("Please check your "+r+" player count.");
+ }
+ const c=$("captain").value,v=$("vice").value;
+ if(!c||!v)return alert("Select Captain and Vice Captain.");
+ if(c===v)return alert("Captain and Vice Captain must be different.");
+ const team={
+ players:selected,
+ captain:Number(c),
+ vice:Number(v),
+ credits:selected.reduce((s,p)=>s+p.c,0)
+ };
+ try{
+ localStorage.setItem("psFantasyTeam",JSON.stringify(team));
+ }catch(e){
+ return alert("Browser storage unavailable. Please try another browser.");
+ }
+ $("message").textContent="✅ Team saved on this device! Credits used: "+team.credits;
+ alert("Your demo team has been saved!");
+}
+
+render();
+</script>
 </body>
 </html>
