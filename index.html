@@ -80,7 +80,14 @@ footer{text-align:center;padding:20px;color:#9caec2}
 <button class="add full" onclick="saveTeam()">✅ Save My Team</button>
 <p id="message" class="notice"></p>
 </div>
-</main>
+
+<div class="card">
+  <h3>🏏 My Team 🇳🇵</h3>
+  <div id="myTeam">
+    <p>No saved team yet.</p>
+  </div>
+</div>
+/</main>
 
 <footer>PS Fantasy Nepal 🇳🇵 | Demo Version</footer>
 
@@ -201,9 +208,42 @@ function saveTeam(){
  }
  $("message").textContent="✅ Team saved on this device! Credits used: "+team.credits;
  alert("Your demo team has been saved!");
+renderMyTeam();
 }
 
+
+function renderMyTeam(){
+  const box = document.getElementById("myTeam");
+  let team;
+
+  try {
+    team = JSON.parse(
+      localStorage.getItem("psFantasyTeam")
+    );
+  } catch(e) {
+    team = null;
+  }
+
+  if(!team || !team.players || !team.players.length){
+    box.innerHTML = "<p>No saved team yet.</p>";
+    return;
+  }
+
+  box.innerHTML = `
+    <p>🏏 Total Players: ${team.players.length}</p>
+    <p>💰 Credits Used: ${team.credits}</p>
+    ${team.players.map(p => `
+      <p>
+        ${p.n}
+        ${p.id == team.captain ? "👑 C" : ""}
+        ${p.id == team.vice ? "⭐ VC" : ""}
+        - ${p.r}
+      </p>
+    `).join("")}
+  `;
+}
 render();
+renderMyTeam();
 </script>
 </body>
 </html>
